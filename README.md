@@ -2,7 +2,7 @@
 
 A complete, fully-functional AI research assistant that runs as a **single HTML file**. No backend required. Host on GitHub Pages and share via direct URL.
 
-**[▶ Live Demo](https://your-username.github.io/research-copilot)** ← Replace with your GitHub Pages URL
+**[▶ Live Demo](https://github.com/rajeevfee/research-copilot)** 
 
 ---
 

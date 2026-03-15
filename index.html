@@ -354,25 +354,31 @@ input[type=checkbox]{accent-color:var(--accent);margin-right:6px}
   .grid2{grid-template-columns:1fr}
 }
 </style>
+<script src="https://js.puter.com/v2/"></script>
 </head>
 <body>
 
-<!-- ═══════════════════════════════════════════════════ SETUP SCREEN -->
+<!-- ═══════════════════════════════════════════════════ WELCOME SCREEN (No API Key Needed) -->
 <div id="setup-screen">
   <div class="setup-card">
     <div class="setup-logo">
       <div class="setup-logo-icon">🔬</div>
       <div>
         <div class="setup-logo-text">ResearchCopilot</div>
-        <div class="setup-logo-sub">v1.0 · Powered by Claude AI</div>
+        <div class="setup-logo-sub">Powered by Claude AI via Puter.js</div>
       </div>
     </div>
-    <div class="setup-title">Your AI-Powered<br>Research Assistant</div>
-    <div class="setup-desc">Upload papers, build a knowledge base, generate literature reviews, identify research gaps, and write papers — all grounded in your documents.</div>
-    <label>Your Anthropic API Key</label>
-    <input class="setup-input" type="password" id="api-key-input" placeholder="sk-ant-api03-…" autocomplete="off">
-    <div class="setup-note">🔒 Your API key is stored only in your browser's localStorage — it never leaves your device or touches any server. All requests go directly to Anthropic's API.</div>
-    <button class="setup-btn" onclick="startApp()">Launch Research Copilot →</button>
+    <div class="setup-title">Your AI Research<br>Assistant — Free</div>
+    <div class="setup-desc">Upload papers, build a knowledge base, generate literature reviews, find research gaps, design experiments, and write papers — all powered by Claude AI at zero cost.</div>
+    <div style="display:flex;align-items:center;gap:14px;background:linear-gradient(135deg,rgba(34,211,160,0.12),rgba(79,142,255,0.12));border:1px solid rgba(34,211,160,0.35);border-radius:14px;padding:16px 20px;margin-bottom:24px">
+      <div style="font-size:30px">🎉</div>
+      <div>
+        <div style="font-size:15px;font-weight:600;color:var(--green);margin-bottom:4px">100% Free — No API Key Required</div>
+        <div style="font-size:11px;color:var(--text3);font-family:var(--mono)">Powered by Puter.js · Claude Sonnet 4.6 · Unlimited usage</div>
+      </div>
+    </div>
+    <button class="setup-btn" onclick="startApp()">Launch ResearchCopilot — Free →</button>
+    <div style="font-size:10px;color:var(--text3);text-align:center;margin-top:10px;font-family:var(--mono)">No sign-up · No credit card · No API key · Works instantly</div>
     <div class="setup-features">
       <div class="setup-feature"><div class="setup-feature-dot" style="background:var(--accent)"></div>RAG Document Chat</div>
       <div class="setup-feature"><div class="setup-feature-dot" style="background:var(--accent2)"></div>Literature Reviews</div>
@@ -428,7 +434,7 @@ input[type=checkbox]{accent-color:var(--accent);margin-right:6px}
   <div class="main">
     <div class="topbar">
       <div class="topbar-title" id="page-title">Dashboard</div>
-      <span class="topbar-model">claude-sonnet-4</span>
+      <span class="topbar-model" style="color:#22d3a0;background:rgba(34,211,160,0.1);border-color:rgba(34,211,160,0.2)">FREE · Puter.js</span>
       <button class="btn btn-sm" id="topbar-secondary" style="display:none"></button>
       <button class="btn btn-primary btn-sm" id="topbar-primary" onclick="topbarPrimaryAction()">+ New Session</button>
     </div>
@@ -468,8 +474,6 @@ const PAGE_CONFIG = {
 // INIT
 // ═══════════════════════════════════════════
 window.onload = () => {
-  const saved = localStorage.getItem('rc_api_key');
-  if (saved) { document.getElementById('api-key-input').value = saved; }
   loadDocsFromStorage();
 
   document.querySelectorAll('.sb-item[data-page]').forEach(el => {
@@ -481,13 +485,6 @@ window.onload = () => {
 };
 
 function startApp() {
-  const key = document.getElementById('api-key-input').value.trim();
-  if (!key || !key.startsWith('sk-')) {
-    toast('Please enter a valid Anthropic API key (starts with sk-ant…)', 'red');
-    return;
-  }
-  API_KEY = key;
-  localStorage.setItem('rc_api_key', key);
   document.getElementById('setup-screen').style.display = 'none';
   document.getElementById('app').style.display = 'flex';
   navigateTo('dashboard');
@@ -629,41 +626,19 @@ function retrieveChunks(query, maxChunks = 5) {
 // CLAUDE API
 // ═══════════════════════════════════════════
 async function callClaude(system, userMsg, maxTokens = 1200) {
-  const res = await fetch('https://api.anthropic.com/v1/messages', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'x-api-key': API_KEY, 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' },
-    body: JSON.stringify({
-      model: 'claude-sonnet-4-20250514',
-      max_tokens: maxTokens,
-      system,
-      messages: [{ role: 'user', content: userMsg }]
-    })
-  });
-  if (!res.ok) {
-    const err = await res.json().catch(() => ({}));
-    throw new Error(err.error?.message || `API Error ${res.status}`);
-  }
-  const data = await res.json();
-  return data.content?.[0]?.text || '';
+  const model = 'claude-sonnet-4-6';
+  const full = system ? system + '\n\n---\n\n' + userMsg : userMsg;
+  const response = await puter.ai.chat(full, { model });
+  return response?.message?.content?.[0]?.text || response?.text || String(response);
 }
 
 async function callClaudeChat(system, history) {
-  const res = await fetch('https://api.anthropic.com/v1/messages', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'x-api-key': API_KEY, 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' },
-    body: JSON.stringify({
-      model: 'claude-sonnet-4-20250514',
-      max_tokens: 1200,
-      system,
-      messages: history
-    })
-  });
-  if (!res.ok) {
-    const err = await res.json().catch(() => ({}));
-    throw new Error(err.error?.message || `API Error ${res.status}`);
-  }
-  const data = await res.json();
-  return data.content?.[0]?.text || '';
+  const model = 'claude-sonnet-4-6';
+  // Build a flat message combining system + history for Puter.js
+  const msgs = history.map(m => `${m.role === 'assistant' ? 'Assistant' : 'User'}: ${m.content}`).join('\n\n');
+  const full = system + '\n\n=== CONVERSATION ===\n' + msgs;
+  const response = await puter.ai.chat(full, { model });
+  return response?.message?.content?.[0]?.text || response?.text || String(response);
 }
 
 // ═══════════════════════════════════════════
@@ -1475,7 +1450,7 @@ function settings() {
   <div style="margin-bottom:14px">
     <label>Anthropic API Key</label>
     <div style="display:flex;gap:8px">
-      <input type="password" id="settings-key" value="${escHtml(key)}" placeholder="sk-ant-api03-…" style="flex:1">
+      <input type="text" id="settings-key" value="Puter.js (Free - No Key Needed)" style="flex:1;color:var(--green)" readonly>
       <button class="btn btn-primary" onclick="saveSettings()">Save</button>
     </div>
     <div style="font-size:10px;color:var(--text3);margin-top:6px;font-family:var(--mono)">Stored in localStorage. Never sent to any server except Anthropic directly.</div>

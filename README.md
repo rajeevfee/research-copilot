@@ -4,7 +4,7 @@
 
 ## ⚡ One-Click Deploy to Netlify
 
-[![Deploy to Netlify](https://www.netlify.com/img/deploy/button.svg)](https://app.netlify.com/start/deploy?repository=https://github.com/YOUR_USERNAME/research-copilot)
+[![Deploy to Netlify](https://www.netlify.com/img/deploy/button.svg)](https://app.netlify.com/start/deploy?repository=https://github.com/rajeevfee/research-copilot)
 
 **Click → Connect GitHub → Done. Live in 60 seconds. Zero cost forever.**
 

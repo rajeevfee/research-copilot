@@ -8,7 +8,7 @@
 
 **Click → Connect GitHub → Done. Live in 60 seconds. Zero cost forever.**
 
-> Replace `YOUR_USERNAME` with your GitHub username after forking.
+
 
 ---
 

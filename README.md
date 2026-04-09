@@ -107,4 +107,4 @@ python3 -m http.server 8000
 
 MIT — free for personal and commercial use.
 
-Built with [Claude AI](https://anthropic.com) · Free hosting via [Netlify](https://netlify.com) · Free AI via [Puter.js](https://puter.com)
+Free hosting via [Netlify](https://netlify.com) · Free AI via [Puter.js](https://puter.com)
